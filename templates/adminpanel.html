@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Admin Panel — Complaints</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root { --bg:#f6f7fb; --accent:#22c55e; }
+    body { background: linear-gradient(180deg,var(--bg),#ffffff); }
+    .neo { background: var(--bg); box-shadow: 22px 22px 44px #d7d9e7, -22px -22px 44px #ffffff; border-radius:18px; }
+    .neo-soft { background: var(--bg); box-shadow: 10px 10px 20px #e7e9f0, -10px -10px 20px #ffffff; border-radius:12px; }
+    .accent { background: linear-gradient(90deg,var(--accent),#16a34a); color:#062017; }
+  </style>
+</head>
+<body class="min-h-screen font-inter text-slate-900">
+  <header class="p-6 flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <div class="w-14 h-14 neo rounded-xl flex items-center justify-center text-xl font-bold">AD</div>
+      <div>
+        <div class="text-lg font-semibold">Admin Panel</div>
+        <div class="text-sm text-slate-500">Manage complaints & users</div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <a href="{{ url_for('admin_add_user') }}" class="py-2 px-4 rounded-xl neo-soft">+ Add user</a>
+      <a href="{{ url_for('logout') }}" class="py-2 px-4 rounded-xl neo-soft">Logout</a>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-6 pb-12">
+    <section class="neo p-6 mb-6">
+      <form method="GET" action="{{ url_for('adminpanel') }}" class="flex gap-4 items-center">
+        <input name="search_username" value="{{ search_username }}" placeholder="Search username..." class="p-3 rounded-xl neo-soft w-64" />
+        <select name="filter_priority" class="p-3 rounded-xl neo-soft">
+          {% for p in priority_options %}
+            <option value="{{ p }}" {% if p==filter_priority %}selected{% endif %}>{{ p }}</option>
+          {% endfor %}
+        </select>
+        <select name="filter_status" class="p-3 rounded-xl neo-soft">
+          {% for s in status_options %}
+            <option value="{{ s }}" {% if s==filter_status %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="py-3 px-5 rounded-xl accent font-semibold">Apply</button>
+        <a href="{{ url_for('adminpanel') }}" class="text-sm text-slate-500 ml-4">Reset</a>
+      </form>
+    </section>
+
+    <section class="neo p-6">
+      <div class="overflow-x-auto">
+        <table class="min-w-full table-auto">
+          <thead>
+            <tr class="text-left">
+              <th class="p-4 text-sm text-slate-600">ID</th>
+              <th class="p-4 text-sm text-slate-600">User</th>
+              <th class="p-4 text-sm text-slate-600">Complaint</th>
+              <th class="p-4 text-sm text-slate-600">Priority</th>
+              <th class="p-4 text-sm text-slate-600">Status</th>
+              <th class="p-4 text-sm text-slate-600">Admin message</th>
+              <th class="p-4 text-sm text-slate-600">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y">
+            {% for c in complaints %}
+              <tr>
+                <td class="p-4 text-sm">{{ c[0] }}</td>
+                <td class="p-4 text-sm">{{ c[1] }}</td>
+                <td class="p-4 text-sm max-w-xl">{{ c[2] }}</td>
+                <td class="p-4 text-sm">{{ c[3] }}</td>
+                <td class="p-4 text-sm">{{ c[4] }}</td>
+                <td class="p-4 text-sm w-72">
+                  <form method="POST" action="{{ url_for('admin_update') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="complaint_id" value="{{ c[0] }}">
+                    <textarea name="admin_message" class="w-full p-2 rounded-md" placeholder="Message to user...">{{ c[5] }}</textarea>
+                </td>
+                <td class="p-4 text-sm space-y-2">
+                    <select name="status" onchange="this.form.submit()" class="p-2 rounded-md w-full">
+                      <option value="Pending" {% if c[4]=='Pending' %}selected{% endif %}>Pending</option>
+                      <option value="In Progress" {% if c[4]=='In Progress' %}selected{% endif %}>In Progress</option>
+                      <option value="Resolved" {% if c[4]=='Resolved' %}selected{% endif %}>Resolved</option>
+                    </select>
+                    <button type="submit" class="w-full py-2 rounded-md mt-2 bg-emerald-100 text-emerald-800 font-semibold">Save</button>
+                  </form>
+
+                  <form method="POST" action="{{ url_for('admin_delete', complaint_id=c[0]) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="w-full py-2 rounded-md mt-2 text-red-600 border border-red-100">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            {% else %}
+              <tr><td colspan="7" class="p-6 text-slate-500">No complaints found.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

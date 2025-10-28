@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Sign in — Complaints</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Strong Neumorphism shadows (light theme) */
+    .neo {
+      background: #f6f7fb;
+      box-shadow: 18px 18px 36px #d7d9e7, -18px -18px 36px #ffffff;
+    }
+    .neo-inset {
+      background: #f6f7fb;
+      box-shadow: inset 10px 10px 20px #e0e3ee, inset -10px -10px 20px #ffffff;
+    }
+    .accent { --accent:#22c55e; } /* Tailwind emerald */
+    .btn-accent {
+      background: linear-gradient(90deg, rgba(34,197,94,1), rgba(16,185,129,1));
+      color: #062017;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-white to-slate-50 flex items-center justify-center font-inter">
+  <main class="w-full max-w-md p-8 neo rounded-2xl">
+    <h1 class="text-2xl font-semibold text-slate-800 mb-4">Welcome back</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="space-y-2 mb-4">
+          {% for category, text in messages %}
+            <div class="rounded-lg p-3 text-sm {% if category == 'success' %}bg-emerald-50 text-emerald-700{% else %}bg-red-50 text-red-700{% endif %}">
+              {{ text }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('login') }}" class="space-y-4">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label class="block text-slate-600 text-sm">Username</label>
+      <input name="username" required class="w-full p-3 rounded-xl border-0 outline-0 neo-inset" placeholder="your username" />
+
+      <label class="block text-slate-600 text-sm">Password</label>
+      <input name="password" type="password" required class="w-full p-3 rounded-xl border-0 outline-0 neo-inset" placeholder="your password" />
+
+      <button type="submit" class="w-full py-3 rounded-xl btn-accent font-semibold shadow-md">Sign in</button>
+    </form>
+
+
+
+<div class="text-center mt-4">
+    <a href="/about-devs" class="underline text-blue-700">About Devs</a>
+</div>
+  
+  </main>
+
+
+</body>
+</html>

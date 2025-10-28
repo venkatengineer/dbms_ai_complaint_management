@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Add user — Admin</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root { --bg:#f6f7fb; }
+    body { background: linear-gradient(180deg,var(--bg),#ffffff); }
+    .neo { background: var(--bg); box-shadow: 22px 22px 44px #d7d9e7, -22px -22px 44px #ffffff; border-radius:18px; }
+  </style>
+</head>
+<body class="min-h-screen font-inter">
+  <header class="p-6 flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <div class="w-12 h-12 neo rounded-lg flex items-center justify-center font-bold">AD</div>
+      <div>
+        <div class="text-lg font-semibold">Add new user</div>
+        <div class="text-sm text-slate-500">Create user or admin accounts</div>
+      </div>
+    </div>
+    <div><a href="{{ url_for('adminpanel') }}" class="py-2 px-4 rounded-xl neo">Back to Admin</a></div>
+  </header>
+
+  <main class="max-w-2xl mx-auto p-6">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="space-y-2 mb-4">
+          {% for category, text in messages %}
+            <div class="rounded-lg p-3 text-sm {% if category == 'success' %}bg-emerald-50 text-emerald-700{% else %}bg-red-50 text-red-700{% endif %}">{{ text }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <div class="neo p-6">
+      <form method="POST" action="{{ url_for('admin_add_user') }}" class="space-y-4">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label class="block text-sm text-slate-600">Username</label>
+        <input name="username" required class="w-full p-3 rounded-xl neo-soft" placeholder="username" />
+
+        <label class="block text-sm text-slate-600">Password</label>
+        <input name="password" type="password" required class="w-full p-3 rounded-xl neo-soft" placeholder="strong password" />
+
+        <label class="block text-sm text-slate-600">Role</label>
+        <select name="role" class="w-full p-3 rounded-xl neo-soft">
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+        </select>
+
+        <div class="flex items-center gap-4 mt-4">
+          <button type="submit" class="py-3 px-6 rounded-xl bg-emerald-500 text-white font-semibold shadow">Create user</button>
+          <a href="{{ url_for('adminpanel') }}" class="text-sm text-slate-500">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </main>
+</body>
+</html>
