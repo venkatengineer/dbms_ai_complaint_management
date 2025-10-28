@@ -1,2 +1,6 @@
 flask
 gunicorn
+flask-wtf
+wtforms
+email-validator
+
